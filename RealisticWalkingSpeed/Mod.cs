@@ -26,7 +26,7 @@ namespace RealisticWalkingSpeed
         public string SystemName = "RealisticWalkingSpeed";
         public string Name => "Realistic Walking Speed";
         public string Description => "Adjusts pedestrian walking speeds to realistic values.";
-        public string Version => "1.1.1";
+        public string Version => "1.1.2";
 
         public void OnEnabled()
         {
@@ -66,11 +66,11 @@ namespace RealisticWalkingSpeed
         {
             this.configurationService = null;
 
-            this.harmony.RemovePatch(this.setRenderParametersMethodInfo, this.setRenderParametersPostfixMethodInfo);
+            this.harmony.Unpatch(this.setRenderParametersMethodInfo, this.setRenderParametersPostfixMethodInfo);
             this.setRenderParametersPostfixMethodInfo = null;
             this.setRenderParametersMethodInfo = null;
 
-            this.harmony.RemovePatch(this.simulationStepMethodInfo, this.simulationStepTranspilerMethodInfo);
+            this.harmony.Unpatch(this.simulationStepMethodInfo, this.simulationStepTranspilerMethodInfo);
             this.simulationStepTranspilerMethodInfo = null;
             this.simulationStepMethodInfo = null;
 
