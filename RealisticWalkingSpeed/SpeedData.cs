@@ -1,45 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using static Citizen;
 
 namespace RealisticWalkingSpeed
 {
     public class SpeedData
     {
-        private struct AgeRange
-        {
-            private AgeRange(int ageMin, int ageMax)
-            {
-                this.AgeMin = ageMin;
-                this.AgeMax = ageMax;
-            }
-
-            public int AgeMin { get; }
-            public int AgeMax { get; }
-
-            public static AgeRange From0to10 => new AgeRange(0, 10);
-            public static AgeRange From10to20 => new AgeRange(10, 20);
-            public static AgeRange From20to30 => new AgeRange(20, 30);
-            public static AgeRange From30to40 => new AgeRange(30, 40);
-            public static AgeRange From40to50 => new AgeRange(40, 50);
-            public static AgeRange From50to60 => new AgeRange(50, 60);
-            public static AgeRange From60to70 => new AgeRange(60, 70);
-            public static AgeRange From70to80 => new AgeRange(70, 80);
-            public static AgeRange From80to90 => new AgeRange(80, 90);
-            public static AgeRange From90to100 => new AgeRange(90, 100);
-        }
-
-                private struct AgeRangeAndGender
-        {
-            public AgeRangeAndGender(AgeRange ageRange, Gender gender)
-            {
-                this.AgeRange = ageRange;
-                this.Gender = gender;
-            }
-
-            public AgeRange AgeRange { get; }
-            public Gender Gender { get; }
-        }
-
         //sources:
         //http://lermagazine.com/article/self-selected-gait-speed-a-critical-clinical-outcome
         //https://musculoskeletalkey.com/testing-functional-performance/
@@ -116,6 +82,43 @@ namespace RealisticWalkingSpeed
         {
             var ageRange = GetAgeRangeFrom(GetAgeGroupFrom(agePhase));
             return data[new AgeRangeAndGender(ageRange, gender)];
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct AgeRange
+        {
+            public readonly int ageMin;
+            public readonly int ageMax;
+
+            private AgeRange(int ageMin, int ageMax)
+            {
+                this.ageMin = ageMin;
+                this.ageMax = ageMax;
+            }
+
+            public static AgeRange From0to10 => new AgeRange(0, 10);
+            public static AgeRange From10to20 => new AgeRange(10, 20);
+            public static AgeRange From20to30 => new AgeRange(20, 30);
+            public static AgeRange From30to40 => new AgeRange(30, 40);
+            public static AgeRange From40to50 => new AgeRange(40, 50);
+            public static AgeRange From50to60 => new AgeRange(50, 60);
+            public static AgeRange From60to70 => new AgeRange(60, 70);
+            public static AgeRange From70to80 => new AgeRange(70, 80);
+            public static AgeRange From80to90 => new AgeRange(80, 90);
+            public static AgeRange From90to100 => new AgeRange(90, 100);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct AgeRangeAndGender
+        {
+            public readonly AgeRange ageRange;
+            public readonly Gender gender;
+
+            public AgeRangeAndGender(AgeRange ageRange, Gender gender)
+            {
+                this.ageRange = ageRange;
+                this.gender = gender;
+            }
         }
     }
 }
