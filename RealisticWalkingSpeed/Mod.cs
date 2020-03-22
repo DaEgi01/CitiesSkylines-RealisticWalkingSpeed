@@ -14,14 +14,14 @@ namespace RealisticWalkingSpeed
 {
     public class Mod : LoadingExtensionBase, IUserMod
     {
-        private HarmonyInstance harmony;
-        private MethodInfo setRenderParametersMethodInfo;
-        private MethodInfo setRenderParametersPostfixMethodInfo;
-        private MethodInfo simulationStepMethodInfo;
-        private MethodInfo simulationStepTranspilerMethodInfo;
+        private HarmonyInstance _harmony;
+        private MethodInfo _setRenderParametersMethodInfo;
+        private MethodInfo _setRenderParametersPostfixMethodInfo;
+        private MethodInfo _simulationStepMethodInfo;
+        private MethodInfo _simulationStepTranspilerMethodInfo;
 
-        private ConfigurationService configurationService;
-        private static ConfigurationDto configurationDto;
+        private ConfigurationService _configurationService;
+        private static ConfigurationDto _configurationDto;
 
         public string SystemName = "RealisticWalkingSpeed";
         public string Name => "Realistic Walking Speed";
@@ -30,13 +30,13 @@ namespace RealisticWalkingSpeed
 
         public void OnEnabled()
         {
-            this.harmony = HarmonyInstance.Create("egi.citiesskylinesmods.realisticwalkingspeed");
+            _harmony = HarmonyInstance.Create("egi.citiesskylinesmods.realisticwalkingspeed");
 
-            this.setRenderParametersMethodInfo = typeof(CitizenInfo).GetMethod("SetRenderParameters", BindingFlags.Instance | BindingFlags.Public);
-            this.setRenderParametersPostfixMethodInfo = this.GetType().GetMethod(nameof(SetRenderParametersPostfix), BindingFlags.Static | BindingFlags.NonPublic);
-            this.harmony.Patch(this.setRenderParametersMethodInfo, null, new HarmonyMethod(this.setRenderParametersPostfixMethodInfo));
+            _setRenderParametersMethodInfo = typeof(CitizenInfo).GetMethod("SetRenderParameters", BindingFlags.Instance | BindingFlags.Public);
+            _setRenderParametersPostfixMethodInfo = GetType().GetMethod(nameof(SetRenderParametersPostfix), BindingFlags.Static | BindingFlags.NonPublic);
+            _harmony.Patch(_setRenderParametersMethodInfo, null, new HarmonyMethod(_setRenderParametersPostfixMethodInfo));
 
-            this.simulationStepMethodInfo = typeof(HumanAI).GetMethod(
+            _simulationStepMethodInfo = typeof(HumanAI).GetMethod(
                 "SimulationStep"
                 , BindingFlags.Instance | BindingFlags.Public
                 , Type.DefaultBinder
@@ -47,48 +47,48 @@ namespace RealisticWalkingSpeed
                     typeof(bool) }
                 , null
             );
-            this.simulationStepTranspilerMethodInfo = this.GetType().GetMethod(nameof(SimulationStepTranspiler), BindingFlags.Static | BindingFlags.NonPublic);
-            this.harmony.Patch(this.simulationStepMethodInfo, null, null, new HarmonyMethod(this.simulationStepTranspilerMethodInfo));
+            _simulationStepTranspilerMethodInfo = GetType().GetMethod(nameof(SimulationStepTranspiler), BindingFlags.Static | BindingFlags.NonPublic);
+            _harmony.Patch(_simulationStepMethodInfo, null, null, new HarmonyMethod(_simulationStepTranspilerMethodInfo));
 
             var configurationFileFullName = Path.Combine(DataLocation.localApplicationData, SystemName + ".xml");
-            this.configurationService = new ConfigurationService(configurationFileFullName);
+            _configurationService = new ConfigurationService(configurationFileFullName);
             if (File.Exists(configurationFileFullName))
             {
-                configurationDto = configurationService.Load();
+                _configurationDto = _configurationService.Load();
             }
             else
             {
-                configurationDto = new ConfigurationDto();
+                _configurationDto = new ConfigurationDto();
             }
         }
 
         public void OnDisabled()
         {
-            this.configurationService = null;
+            _configurationService = null;
 
-            this.harmony.Unpatch(this.setRenderParametersMethodInfo, this.setRenderParametersPostfixMethodInfo);
-            this.setRenderParametersPostfixMethodInfo = null;
-            this.setRenderParametersMethodInfo = null;
+            _harmony.Unpatch(_setRenderParametersMethodInfo, _setRenderParametersPostfixMethodInfo);
+            _setRenderParametersPostfixMethodInfo = null;
+            _setRenderParametersMethodInfo = null;
 
-            this.harmony.Unpatch(this.simulationStepMethodInfo, this.simulationStepTranspilerMethodInfo);
-            this.simulationStepTranspilerMethodInfo = null;
-            this.simulationStepMethodInfo = null;
+            _harmony.Unpatch(_simulationStepMethodInfo, _simulationStepTranspilerMethodInfo);
+            _simulationStepTranspilerMethodInfo = null;
+            _simulationStepMethodInfo = null;
 
-            this.harmony = null;
+            _harmony = null;
         }
 
         public void OnSettingsUI(UIHelperBase helper)
         {
-            var modFullTitle = new ModFullTitle(this.Name, this.Version);
+            var modFullTitle = new ModFullTitle(Name, Version);
 
             var mainGroupUiHelper = helper.AddGroup(modFullTitle);
             var mainGroupContentPanel = (mainGroupUiHelper as UIHelper).self as UIPanel;
             mainGroupContentPanel.backgroundSprite = string.Empty;
 
-            mainGroupUiHelper.AddSliderWithLabel("Animation speed factor", 0f, 10f, 0.1f, configurationDto.AnimationSpeedFactor, value => 
+            mainGroupUiHelper.AddSliderWithLabel("Animation speed factor", 0f, 10f, 0.1f, _configurationDto.AnimationSpeedFactor, value => 
             {
-                configurationDto.AnimationSpeedFactor = value;
-                this.configurationService.Save(configurationDto);
+                _configurationDto.AnimationSpeedFactor = value;
+                _configurationService.Save(_configurationDto);
             });
         }
 
@@ -115,7 +115,7 @@ namespace RealisticWalkingSpeed
 
         private static void SetRenderParametersPostfix(Animator ___m_animator)
         {
-            ___m_animator.speed = ___m_animator.speed * configurationDto.AnimationSpeedFactor;
+            ___m_animator.speed = ___m_animator.speed * _configurationDto.AnimationSpeedFactor;
         }
 
         private static IEnumerable<CodeInstruction> SimulationStepTranspiler(IEnumerable<CodeInstruction> codeInstructions)

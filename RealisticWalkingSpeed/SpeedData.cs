@@ -9,7 +9,7 @@ namespace RealisticWalkingSpeed
         //sources:
         //http://lermagazine.com/article/self-selected-gait-speed-a-critical-clinical-outcome
         //https://musculoskeletalkey.com/testing-functional-performance/
-        private readonly Dictionary<AgeRangeAndGender, float> data = new Dictionary<AgeRangeAndGender, float>()
+        private readonly Dictionary<AgeRangeAndGender, float> _data = new Dictionary<AgeRangeAndGender, float>()
         {
             { new AgeRangeAndGender(AgeRange.From0to10, Gender.Male), 0.68544f },
             { new AgeRangeAndGender(AgeRange.From0to10, Gender.Female), 0.6624f },
@@ -81,19 +81,19 @@ namespace RealisticWalkingSpeed
         public float GetAverageSpeed(AgePhase agePhase, Gender gender)
         {
             var ageRange = GetAgeRangeFrom(GetAgeGroupFrom(agePhase));
-            return data[new AgeRangeAndGender(ageRange, gender)];
+            return _data[new AgeRangeAndGender(ageRange, gender)];
         }
 
         [StructLayout(LayoutKind.Auto)]
         private readonly struct AgeRange
         {
-            public readonly int ageMin;
-            public readonly int ageMax;
+            public readonly int _ageMin;
+            public readonly int _ageMax;
 
             private AgeRange(int ageMin, int ageMax)
             {
-                this.ageMin = ageMin;
-                this.ageMax = ageMax;
+                _ageMin = ageMin;
+                _ageMax = ageMax;
             }
 
             public static AgeRange From0to10 => new AgeRange(0, 10);
@@ -111,13 +111,13 @@ namespace RealisticWalkingSpeed
         [StructLayout(LayoutKind.Auto)]
         private readonly struct AgeRangeAndGender
         {
-            public readonly AgeRange ageRange;
-            public readonly Gender gender;
+            public readonly AgeRange _ageRange;
+            public readonly Gender _gender;
 
             public AgeRangeAndGender(AgeRange ageRange, Gender gender)
             {
-                this.ageRange = ageRange;
-                this.gender = gender;
+                _ageRange = ageRange;
+                _gender = gender;
             }
         }
     }
