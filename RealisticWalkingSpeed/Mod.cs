@@ -1,11 +1,8 @@
-﻿using ColossalFramework.IO;
-using ColossalFramework.UI;
+﻿using ColossalFramework.UI;
 using Harmony;
 using ICities;
-using RealisticWalkingSpeed.Configuration;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
 using UnityEngine;
@@ -14,14 +11,8 @@ namespace RealisticWalkingSpeed
 {
     public class Mod : LoadingExtensionBase, IUserMod
     {
+        private readonly string _harmonyId = "egi.citiesskylinesmods.realisticwalkingspeed";
         private HarmonyInstance _harmony;
-        private MethodInfo _setRenderParametersMethodInfo;
-        private MethodInfo _setRenderParametersPostfixMethodInfo;
-        private MethodInfo _simulationStepMethodInfo;
-        private MethodInfo _simulationStepTranspilerMethodInfo;
-
-        private ConfigurationService _configurationService;
-        private static ConfigurationDto _configurationDto;
 
         public string SystemName = "RealisticWalkingSpeed";
         public string Name => "Realistic Walking Speed";
@@ -30,50 +21,32 @@ namespace RealisticWalkingSpeed
 
         public void OnEnabled()
         {
-            _harmony = HarmonyInstance.Create("egi.citiesskylinesmods.realisticwalkingspeed");
+            _harmony = HarmonyInstance.Create(_harmonyId);
 
-            _setRenderParametersMethodInfo = typeof(CitizenInfo).GetMethod("SetRenderParameters", BindingFlags.Instance | BindingFlags.Public);
-            _setRenderParametersPostfixMethodInfo = GetType().GetMethod(nameof(SetRenderParametersPostfix), BindingFlags.Static | BindingFlags.NonPublic);
-            _harmony.Patch(_setRenderParametersMethodInfo, null, new HarmonyMethod(_setRenderParametersPostfixMethodInfo));
+            var _setRenderParametersMethodInfo = typeof(CitizenInfo).GetMethod("SetRenderParameters", BindingFlags.Instance | BindingFlags.Public);
+            var _setRenderParametersTranspilerMethodInfo = GetType().GetMethod(nameof(SetRenderParametersTranspiler), BindingFlags.Static | BindingFlags.NonPublic);
+            _harmony.Patch(_setRenderParametersMethodInfo, null, null, new HarmonyMethod(_setRenderParametersTranspilerMethodInfo));
 
-            _simulationStepMethodInfo = typeof(HumanAI).GetMethod(
-                "SimulationStep"
-                , BindingFlags.Instance | BindingFlags.Public
-                , Type.DefaultBinder
-                , new Type[] {
+            var _simulationStepMethodInfo = typeof(HumanAI).GetMethod(
+                "SimulationStep",
+                BindingFlags.Instance | BindingFlags.Public,
+                Type.DefaultBinder, 
+                new Type[] 
+                {
                     typeof(ushort),
                     typeof(CitizenInstance).MakeByRefType(),
                     typeof(CitizenInstance.Frame).MakeByRefType(),
-                    typeof(bool) }
-                , null
+                    typeof(bool) 
+                }, 
+                null
             );
-            _simulationStepTranspilerMethodInfo = GetType().GetMethod(nameof(SimulationStepTranspiler), BindingFlags.Static | BindingFlags.NonPublic);
+            var _simulationStepTranspilerMethodInfo = GetType().GetMethod(nameof(SimulationStepTranspiler), BindingFlags.Static | BindingFlags.NonPublic);
             _harmony.Patch(_simulationStepMethodInfo, null, null, new HarmonyMethod(_simulationStepTranspilerMethodInfo));
-
-            var configurationFileFullName = Path.Combine(DataLocation.localApplicationData, SystemName + ".xml");
-            _configurationService = new ConfigurationService(configurationFileFullName);
-            if (File.Exists(configurationFileFullName))
-            {
-                _configurationDto = _configurationService.Load();
-            }
-            else
-            {
-                _configurationDto = new ConfigurationDto();
-            }
         }
 
         public void OnDisabled()
         {
-            _configurationService = null;
-
-            _harmony.Unpatch(_setRenderParametersMethodInfo, _setRenderParametersPostfixMethodInfo);
-            _setRenderParametersPostfixMethodInfo = null;
-            _setRenderParametersMethodInfo = null;
-
-            _harmony.Unpatch(_simulationStepMethodInfo, _simulationStepTranspilerMethodInfo);
-            _simulationStepTranspilerMethodInfo = null;
-            _simulationStepMethodInfo = null;
-
+            _harmony.UnpatchAll(_harmonyId);
             _harmony = null;
         }
 
@@ -84,12 +57,6 @@ namespace RealisticWalkingSpeed
             var mainGroupUiHelper = helper.AddGroup(modFullTitle);
             var mainGroupContentPanel = (mainGroupUiHelper as UIHelper).self as UIPanel;
             mainGroupContentPanel.backgroundSprite = string.Empty;
-
-            mainGroupUiHelper.AddSliderWithLabel("Animation speed factor", 0f, 10f, 0.1f, _configurationDto.AnimationSpeedFactor, value => 
-            {
-                _configurationDto.AnimationSpeedFactor = value;
-                _configurationService.Save(_configurationDto);
-            });
         }
 
         public override void OnLevelLoaded(LoadMode mode)
@@ -113,9 +80,41 @@ namespace RealisticWalkingSpeed
             }
         }
 
-        private static void SetRenderParametersPostfix(Animator ___m_animator)
+        private static IEnumerable<CodeInstruction> SetRenderParametersTranspiler(IEnumerable<CodeInstruction> codeInstructions)
         {
-            ___m_animator.speed = ___m_animator.speed * _configurationDto.AnimationSpeedFactor;
+            var hookOperand = typeof(Animator).GetMethod(
+                "SetFloat", 
+                BindingFlags.Public | BindingFlags.Instance,
+                Type.DefaultBinder,
+                new Type[]
+                {
+                    typeof(int),
+                    typeof(float)
+                },
+                null
+            );
+
+            var codes = new List<CodeInstruction>(codeInstructions);
+            for (int i = 0; i < codes.Count; i++)
+            {
+                var code = codes[i];
+                if (!(code.opcode == OpCodes.Callvirt && code.operand == hookOperand))
+                {
+                    continue;
+                }
+
+                //float magnitude = velocity.magnitude;
+                //->
+                //float magnitude = velocity.magnitude * 2.1f;
+                codes.InsertRange(i - 6, new[] {
+                    new CodeInstruction(OpCodes.Ldc_R4, 2.1f), //TODO finetune per CitizenInfo
+                    new CodeInstruction(OpCodes.Mul)
+                });
+
+                break;
+            }
+
+            return codes;
         }
 
         private static IEnumerable<CodeInstruction> SimulationStepTranspiler(IEnumerable<CodeInstruction> codeInstructions)
