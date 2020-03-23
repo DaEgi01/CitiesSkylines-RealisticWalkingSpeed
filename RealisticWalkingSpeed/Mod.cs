@@ -17,7 +17,7 @@ namespace RealisticWalkingSpeed
         public string SystemName = "RealisticWalkingSpeed";
         public string Name => "Realistic Walking Speed";
         public string Description => "Adjusts pedestrian walking speeds to realistic values.";
-        public string Version => "1.2.0";
+        public string Version => "1.2.1";
 
         public void OnEnabled()
         {
