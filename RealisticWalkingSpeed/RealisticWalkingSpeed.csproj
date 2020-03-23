@@ -54,6 +54,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Patches\CitizenAnimationSpeedHarmonyPatch.cs" />
+    <Compile Include="Patches\CitizenCyclingSpeedHarmonyPatch.cs" />
+    <Compile Include="Patches\CitizenWalkingSpeedInGamePatch.cs" />
+    <Compile Include="Patches\IHarmonyPatch.cs" />
+    <Compile Include="Patches\IInGamePatch.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpeedData.cs" />

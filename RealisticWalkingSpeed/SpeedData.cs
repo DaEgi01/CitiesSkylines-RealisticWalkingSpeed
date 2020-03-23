@@ -4,12 +4,12 @@ using static Citizen;
 
 namespace RealisticWalkingSpeed
 {
-    public class SpeedData
+    class SpeedData
     {
         //sources:
         //http://lermagazine.com/article/self-selected-gait-speed-a-critical-clinical-outcome
         //https://musculoskeletalkey.com/testing-functional-performance/
-        private readonly Dictionary<AgeRangeAndGender, float> _data = new Dictionary<AgeRangeAndGender, float>()
+        readonly Dictionary<AgeRangeAndGender, float> _data = new Dictionary<AgeRangeAndGender, float>()
         {
             { new AgeRangeAndGender(AgeRange.From0to10, Gender.Male), 0.68544f },
             { new AgeRangeAndGender(AgeRange.From0to10, Gender.Female), 0.6624f },
@@ -31,7 +31,7 @@ namespace RealisticWalkingSpeed
             { new AgeRangeAndGender(AgeRange.From80to90, Gender.Female), 0.54144f },
         };
 
-        private AgeGroup GetAgeGroupFrom(AgePhase agePhase)
+        AgeGroup GetAgeGroupFrom(AgePhase agePhase)
         {
             switch (agePhase)
             {
@@ -59,7 +59,7 @@ namespace RealisticWalkingSpeed
             }
         }
 
-        private AgeRange GetAgeRangeFrom(AgeGroup ageGroup)
+        AgeRange GetAgeRangeFrom(AgeGroup ageGroup)
         {
             switch (ageGroup)
             {
@@ -85,7 +85,7 @@ namespace RealisticWalkingSpeed
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct AgeRange
+        readonly struct AgeRange
         {
             public readonly int _ageMin;
             public readonly int _ageMax;
@@ -109,7 +109,7 @@ namespace RealisticWalkingSpeed
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct AgeRangeAndGender
+        readonly struct AgeRangeAndGender
         {
             public readonly AgeRange _ageRange;
             public readonly Gender _gender;
