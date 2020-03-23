@@ -50,15 +50,6 @@ namespace RealisticWalkingSpeed
             _harmony = null;
         }
 
-        public void OnSettingsUI(UIHelperBase helper)
-        {
-            var modFullTitle = new ModFullTitle(Name, Version);
-
-            var mainGroupUiHelper = helper.AddGroup(modFullTitle);
-            var mainGroupContentPanel = (mainGroupUiHelper as UIHelper).self as UIPanel;
-            mainGroupContentPanel.backgroundSprite = string.Empty;
-        }
-
         public override void OnLevelLoaded(LoadMode mode)
         {
             if (!(mode == LoadMode.LoadGame || mode == LoadMode.NewGame || mode == LoadMode.NewGameFromScenario))
