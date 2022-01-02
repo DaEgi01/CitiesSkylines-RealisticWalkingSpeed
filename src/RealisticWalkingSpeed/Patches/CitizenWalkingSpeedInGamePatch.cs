@@ -2,9 +2,9 @@
 
 namespace RealisticWalkingSpeed.Patches
 {
-    class CitizenWalkingSpeedInGamePatch : IInGamePatch
+    public class CitizenWalkingSpeedInGamePatch : IInGamePatch
     {
-        readonly SpeedData _speedData;
+        private readonly SpeedData _speedData;
 
         public CitizenWalkingSpeedInGamePatch(SpeedData speedData)
         {
@@ -17,9 +17,7 @@ namespace RealisticWalkingSpeed.Patches
             {
                 var citizenPrefab = PrefabCollection<CitizenInfo>.GetLoaded(i);
                 if (citizenPrefab == null)
-                {
                     continue;
-                }
 
                 citizenPrefab.m_walkSpeed = _speedData.GetAverageSpeed(citizenPrefab.m_agePhase, citizenPrefab.m_gender);
             }

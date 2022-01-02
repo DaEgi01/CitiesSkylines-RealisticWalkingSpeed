@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -7,20 +7,22 @@ using UnityEngine;
 
 namespace RealisticWalkingSpeed.Patches
 {
-    class CitizenAnimationSpeedHarmonyPatch : IHarmonyPatch
+    public class CitizenAnimationSpeedHarmonyPatch : IHarmonyPatch
     {
-        readonly HarmonyInstance _harmony;
+        private readonly Harmony _harmony;
 
-        public CitizenAnimationSpeedHarmonyPatch(HarmonyInstance harmony)
+        public CitizenAnimationSpeedHarmonyPatch(Harmony harmony)
         {
             _harmony = harmony ?? throw new ArgumentNullException(nameof(harmony));
         }
 
         public void Apply()
         {
-            var _setRenderParametersMethodInfo = typeof(CitizenInfo).GetMethod("SetRenderParameters", BindingFlags.Instance | BindingFlags.Public);
-            var _setRenderParametersTranspilerMethodInfo = GetType().GetMethod(nameof(SetRenderParametersTranspiler), BindingFlags.Static | BindingFlags.NonPublic);
-            _harmony.Patch(_setRenderParametersMethodInfo, null, null, new HarmonyMethod(_setRenderParametersTranspilerMethodInfo));
+            var setRenderParametersMethodInfo = typeof(CitizenInfo)
+                .GetMethod("SetRenderParameters", BindingFlags.Instance | BindingFlags.Public);
+            var setRenderParametersTranspilerMethodInfo = GetType()
+                .GetMethod(nameof(SetRenderParametersTranspiler), BindingFlags.Static | BindingFlags.NonPublic);
+            _harmony.Patch(setRenderParametersMethodInfo, null, null, new HarmonyMethod(setRenderParametersTranspilerMethodInfo));
         }
 
         static IEnumerable<CodeInstruction> SetRenderParametersTranspiler(IEnumerable<CodeInstruction> codeInstructions)

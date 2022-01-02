@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using CitiesHarmony.API;
 using ICities;
 using RealisticWalkingSpeed.Patches;
 
@@ -6,36 +6,31 @@ namespace RealisticWalkingSpeed
 {
     public class Mod : LoadingExtensionBase, IUserMod
     {
-        readonly string _harmonyId = "egi.citiesskylinesmods.realisticwalkingspeed";
-        HarmonyInstance _harmony;
-
-        public string SystemName = "RealisticWalkingSpeed";
         public string Name => "Realistic Walking Speed";
         public string Description => "Adjusts pedestrian walking speeds to realistic values.";
-        public string Version => "1.2.1";
+        public string Version => "1.3.0";
 
         public void OnEnabled()
         {
-            _harmony = HarmonyInstance.Create(_harmonyId);
-
-            new CitizenAnimationSpeedHarmonyPatch(_harmony).Apply();
-            new CitizenCyclingSpeedHarmonyPatch(_harmony).Apply();
+            HarmonyHelper.DoOnHarmonyReady(() => Patcher.PatchAll());
         }
 
         public void OnDisabled()
         {
-            _harmony.UnpatchAll(_harmonyId);
-            _harmony = null;
+            if (!HarmonyHelper.IsHarmonyInstalled)
+                return;
+
+            Patcher.UnpatchAll();
         }
 
         public override void OnLevelLoaded(LoadMode mode)
         {
-            if (!(mode == LoadMode.LoadGame || mode == LoadMode.NewGame || mode == LoadMode.NewGameFromScenario))
+            if (mode == LoadMode.NewGame
+                || mode == LoadMode.NewGameFromScenario
+                || mode == LoadMode.LoadGame)
             {
-                return;
+                new CitizenWalkingSpeedInGamePatch(new SpeedData()).Apply();
             }
-
-            new CitizenWalkingSpeedInGamePatch(new SpeedData()).Apply();
         }
     }
 }

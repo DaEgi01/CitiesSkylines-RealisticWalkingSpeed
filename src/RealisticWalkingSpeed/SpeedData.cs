@@ -4,7 +4,7 @@ using static Citizen;
 
 namespace RealisticWalkingSpeed
 {
-    class SpeedData
+    public class SpeedData
     {
         //sources:
         //http://lermagazine.com/article/self-selected-gait-speed-a-critical-clinical-outcome

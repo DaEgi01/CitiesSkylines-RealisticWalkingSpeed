@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -6,11 +6,11 @@ using System.Reflection.Emit;
 
 namespace RealisticWalkingSpeed.Patches
 {
-    class CitizenCyclingSpeedHarmonyPatch : IHarmonyPatch
+    public class CitizenCyclingSpeedHarmonyPatch : IHarmonyPatch
     {
-        private readonly HarmonyInstance _harmony;
+        private readonly Harmony _harmony;
 
-        public CitizenCyclingSpeedHarmonyPatch(HarmonyInstance harmony)
+        public CitizenCyclingSpeedHarmonyPatch(Harmony harmony)
         {
             _harmony = harmony ?? throw new ArgumentNullException(nameof(harmony));
         }
@@ -46,7 +46,7 @@ namespace RealisticWalkingSpeed.Patches
                 }
 
                 var firstCodeOperand = firstCode.operand as LocalBuilder;
-                if (firstCodeOperand.LocalIndex != 22)
+                if (firstCodeOperand?.LocalIndex != 22)
                 {
                     continue;
                 }
