@@ -18,7 +18,7 @@ namespace RealisticWalkingSpeed
             new CitizenAnimationSpeedHarmonyPatch(harmony).Apply();
             new CitizenCyclingSpeedHarmonyPatch(harmony).Apply();
 
-            _patched = false;
+            _patched = true;
         }
 
         public static void UnpatchAll()
