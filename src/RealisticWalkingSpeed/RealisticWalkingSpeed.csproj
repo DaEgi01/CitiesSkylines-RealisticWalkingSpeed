@@ -1,73 +1,76 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <Authors>egi</Authors>
-    <Company>egi</Company>
-    <Product>Realistic Walking Speed</Product>
-    <Description>Adjusts pedestrian walking speeds to realistic values.</Description>
-    <Version>1.3.0</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Authors>egi</Authors>
+		<Company>egi</Company>
+		<Product>Realistic Walking Speed</Product>
+		<Description>Adjusts pedestrian walking speeds to realistic values.</Description>
+		<Version>1.3.0</Version>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <AssemblyTitle>RealisticWalkingSpeed</AssemblyTitle>
-    <TargetFramework>net35</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
-    <AssemblyVersion>1.3.*</AssemblyVersion>
-    <Deterministic>false</Deterministic>
-    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-  </PropertyGroup>
+	<PropertyGroup>
+		<AssemblyTitle>RealisticWalkingSpeed</AssemblyTitle>
+		<TargetFramework>net35</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<AssemblyVersion>1.3.*</AssemblyVersion>
+		<Deterministic>false</Deterministic>
+		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <SteamPath>$(ProgramFiles)\Steam</SteamPath>
-    <SteamPath Condition="!Exists('$(SteamPath)')">$(Registry:HKEY_CURRENT_USER\Software\Valve\Steam@SteamPath)</SteamPath>
-    <CslPath>$(SteamPath)\steamapps\common\Cities_Skylines</CslPath>
-    <CslMangedDllsPath>$(CslPath)\Cities_Data\Managed</CslMangedDllsPath>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="..\..\LICENSE">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+	
+	<PropertyGroup>
+		<SteamPath>$(ProgramFiles)\Steam</SteamPath>
+		<SteamPath Condition="!Exists('$(SteamPath)')">$(Registry:HKEY_CURRENT_USER\Software\Valve\Steam@SteamPath)</SteamPath>
+		<CslPath>$(SteamPath)\steamapps\common\Cities_Skylines</CslPath>
+		<CslMangedDllsPath>$(CslPath)\Cities_Data\Managed</CslMangedDllsPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(CslMangedDllsPath)\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ColossalManaged">
-      <HintPath>$(CslMangedDllsPath)\ColossalManaged.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ICities">
-      <HintPath>$(CslMangedDllsPath)\ICities.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>$(CslMangedDllsPath)\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
+	<ItemGroup>
+		<Reference Include="Assembly-CSharp">
+			<HintPath>$(CslMangedDllsPath)\Assembly-CSharp.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="ColossalManaged">
+			<HintPath>$(CslMangedDllsPath)\ColossalManaged.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="ICities">
+			<HintPath>$(CslMangedDllsPath)\ICities.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>$(CslMangedDllsPath)\UnityEngine.dll</HintPath>
+			<Private>False</Private>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CitiesHarmony.API" Version="2.0.0" />
-    <PackageReference Include="ClrHeapAllocationAnalyzer" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.11.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CitiesHarmony.API" Version="2.0.0" />
+		<PackageReference Include="ClrHeapAllocationAnalyzer" Version="3.0.0" />
+		<PackageReference Include="Microsoft.Unity.Analyzers" Version="1.11.2">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
-  <Target Name="DeployToModDirectory" AfterTargets="Build">
-    <PropertyGroup>
-      <ModDirectory>$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\</ModDirectory>
-    </PropertyGroup>
-    <ItemGroup>
-      <ModFiles Include="$(TargetDir)\**\*.*" />
-    </ItemGroup>
-    <RemoveDir Directories="$(ModDirectory)" />
-    <Copy SourceFiles="@(ModFiles)" DestinationFolder="$(ModDirectory)\%(RecursiveDir)" />
-  </Target>
+	<Target Name="DeployToModDirectory" AfterTargets="Build">
+		<PropertyGroup>
+			<ModDirectory>$(LOCALAPPDATA)\Colossal Order\Cities_Skylines\Addons\Mods\$(ProjectName)\</ModDirectory>
+		</PropertyGroup>
+		<ItemGroup>
+			<ModFiles Include="$(TargetDir)\**\*.*" />
+		</ItemGroup>
+		<RemoveDir Directories="$(ModDirectory)" />
+		<Copy SourceFiles="@(ModFiles)" DestinationFolder="$(ModDirectory)\%(RecursiveDir)" />
+	</Target>
 </Project>
