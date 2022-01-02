@@ -53,7 +53,7 @@
 
   <ItemGroup>
     <PackageReference Include="ClrHeapAllocationAnalyzer" Version="3.0.0" />
-    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.11.0">
+    <PackageReference Include="Microsoft.Unity.Analyzers" Version="1.11.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
