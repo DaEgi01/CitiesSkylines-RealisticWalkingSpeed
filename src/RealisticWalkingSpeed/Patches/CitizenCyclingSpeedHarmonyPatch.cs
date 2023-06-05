@@ -17,11 +17,11 @@ namespace RealisticWalkingSpeed.Patches
 
         public void Apply()
         {
-            var _simulationStepMethodInfo = typeof(HumanAI).GetMethod(
+            var simulationStepMethodInfo = typeof(HumanAI).GetMethod(
                 "SimulationStep",
                 BindingFlags.Instance | BindingFlags.Public,
                 Type.DefaultBinder,
-                new Type[]
+                new []
                 {
                     typeof(ushort),
                     typeof(CitizenInstance).MakeByRefType(),
@@ -30,8 +30,9 @@ namespace RealisticWalkingSpeed.Patches
                 },
                 null
             );
-            var _simulationStepTranspilerMethodInfo = GetType().GetMethod(nameof(SimulationStepTranspiler), BindingFlags.Static | BindingFlags.NonPublic);
-            _harmony.Patch(_simulationStepMethodInfo, null, null, new HarmonyMethod(_simulationStepTranspilerMethodInfo));
+            var simulationStepTranspilerMethodInfo = GetType()
+                .GetMethod(nameof(SimulationStepTranspiler), BindingFlags.Static | BindingFlags.NonPublic);
+            _harmony.Patch(simulationStepMethodInfo, null, null, new HarmonyMethod(simulationStepTranspilerMethodInfo));
         }
 
         static IEnumerable<CodeInstruction> SimulationStepTranspiler(IEnumerable<CodeInstruction> codeInstructions)

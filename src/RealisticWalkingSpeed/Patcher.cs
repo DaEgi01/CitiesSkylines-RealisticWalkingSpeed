@@ -6,7 +6,7 @@ namespace RealisticWalkingSpeed
     public static class Patcher
     {
         private const string _harmonyId = "egi.citiesskylinesmods.realisticwalkingspeed";
-        private static bool _patched = false;
+        private static bool _patched;
 
         public static void PatchAll()
         {

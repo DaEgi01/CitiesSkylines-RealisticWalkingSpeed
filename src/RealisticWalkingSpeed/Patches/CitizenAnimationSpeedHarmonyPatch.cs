@@ -31,7 +31,7 @@ namespace RealisticWalkingSpeed.Patches
                 "SetFloat",
                 BindingFlags.Public | BindingFlags.Instance,
                 Type.DefaultBinder,
-                new Type[]
+                new []
                 {
                     typeof(int),
                     typeof(float)
